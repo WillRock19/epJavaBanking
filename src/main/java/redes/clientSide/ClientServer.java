@@ -10,7 +10,7 @@ import redes.RequestStream;
 
 public class ClientServer 
 {
-	private ClientMessageProcessor messageProcessor;
+	private ClientRequestProcessor messageProcessor;
 	private RequestStream stream;
 	private Socket socket;
 	
@@ -19,7 +19,7 @@ public class ClientServer
 		CreateSocket(clientHost, clientPort);
 		CreateRequestStream(socket);
 		
-		messageProcessor = new ClientMessageProcessor(stream);
+		messageProcessor = new ClientRequestProcessor(stream);
 	}
 	
 	public void ExecuteTcpConnection() 
