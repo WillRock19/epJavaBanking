@@ -22,7 +22,7 @@ public class ClientServer
 		messageProcessor = new ClientRequestProcessor(stream);
 	}
 	
-	public void ExecuteTcpConnection() 
+	public void Execute() 
 	{
 		while(true) 
 		{

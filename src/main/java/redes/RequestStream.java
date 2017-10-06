@@ -14,7 +14,6 @@ public class RequestStream
 	public RequestStream(Socket socket) throws Exception
 	{
 		defineInputFromServerStream(socket);
-	
 		defineOutputToServerStream(socket);
 	}
 	

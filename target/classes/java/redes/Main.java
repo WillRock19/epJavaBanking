@@ -9,15 +9,7 @@ public class Main
     public static void main(String[] args) 
     {
     	
-    	if(args[0].toLowerCase() == "c") 
-    	{
-    		ClientServer cliente = new ClientServer();
-    		cliente.ExecuteTcpConnection();
-    	}
-    	else if(args[0].toLowerCase() == "s") 
-    	{
-    		
-    	}
+    	//TODO: adicionar verificacao se usuario quer criar um servidor ou um cliente e chamar metodos especificos
     	
     	
     	

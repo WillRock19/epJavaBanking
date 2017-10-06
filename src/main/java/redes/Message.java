@@ -24,7 +24,6 @@ public class Message implements Serializable {
         return gson.fromJson( json, Message.class );
     }
 
-
     public Action getAction() {
         return action;
     }
