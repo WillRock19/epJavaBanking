@@ -9,7 +9,6 @@ import redes.clientSide.ClientRequestProcessor;
 
 public class WebServer 
 {
-	private RequestStream stream;
 	private ServerSocket serverSocket;
 	private Socket socket;
 	private int serverPort;
@@ -25,14 +24,10 @@ public class WebServer
 		while(true) 
 		{	
 			socket = serverSocket.accept();
-			CreateRequestStream(socket);
 			
+			RequestProcessor requestProcessor = new RequestProcessor(socket);
 			
-			
-
-			Thread thread = new Thread();
-			
-
+			Thread thread = new Thread(requestProcessor);
 			thread.start(); 
 		}	
 	} 
@@ -44,16 +39,6 @@ public class WebServer
 		}
 		catch(IOException e) {
 			System.err.println("O seguinte erro ocorreu ao criar o Socket TCP do servidor: " + e.getMessage());
-		}
-	}
-	
-	private void CreateRequestStream(Socket socket) 
-	{
-		try {
-			stream = new RequestStream(socket);
-		}
-		catch(Exception e) {
-			System.err.println("O seguinte erro ocorreu ao criar um RequestStream: " + e.getMessage());
 		}
 	}
 }

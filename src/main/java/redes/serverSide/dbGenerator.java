@@ -10,10 +10,10 @@ public class dbGenerator
 	private String dbPath;
 	private Connection connection;
 	
-	public dbGenerator(String dbPath)
+	public dbGenerator(String dbName)
 	{
-		this.dbPath += "jdbc:sqlite:" + dbPath;
-		this.connection = null;
+		createDBPath(dbName);
+		connection = null;
 	}
 	
 	public void OpenDataBaseConnection() 
@@ -40,7 +40,7 @@ public class dbGenerator
 	      }
    }
 	
-	public void CreateTables() 
+	public void CreateTablesIfNotExists() 
 	{
 		String createUserTable = "CREATE IF NOT EXISTS User(\n"
 							     + "Id integer PRIMARY KEY, \n"
@@ -62,10 +62,14 @@ public class dbGenerator
         }
 	}
 	
+	private void createDBPath(String dbName) 
+	{
+		dbPath = "jdbc:sqlite:" + System.getProperty("user.dir") + dbName;
+	}
+	
 	private void loadJDBCDrive() throws Exception
 	{
         Class.forName("org.sqlite.JDBC");
 	}
-	
 	
 }

@@ -34,9 +34,7 @@ public class RequestProcessor implements Runnable
 	
 	private void processRequest() throws Exception
 	{
-		dbGenerator.OpenDataBaseConnection();
-		dbGenerator.CreateTables();
-		
+		PrepareDataBase();
 		Message message = GetMessageFromStream();
 		
 		//Checar se a mensagem está no formato certo
@@ -54,6 +52,13 @@ public class RequestProcessor implements Runnable
 		socket.close();
 	} 
 
+	private void PrepareDataBase() 
+	{
+		dbGenerator.OpenDataBaseConnection();
+		dbGenerator.CreateTablesIfNotExists();
+		
+	}
+	
 	private Message GetMessageFromStream() throws Exception
 	{
 		String json = stream.GetInputFromServer();
