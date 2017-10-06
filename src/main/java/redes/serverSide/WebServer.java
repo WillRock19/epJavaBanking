@@ -10,26 +10,39 @@ import redes.clientSide.ClientRequestProcessor;
 public class WebServer 
 {
 	private ServerSocket serverSocket;
-	private Socket socket;
+	private dbGenerator dbGenerator; 
+
+	private String dbName = "dbBankingTest";
 	private int serverPort;
+	
 	
 	public WebServer(int serverPort) 
 	{
 		this.serverPort = serverPort;
+		
+		CreateDataBase();
+		PrepareDataBase();
+		
 		CreateServerSocket();
 	}
 	
 	public void Execute() throws Exception
 	{
-		while(true) 
-		{	
-			socket = serverSocket.accept();
-			
-			RequestProcessor requestProcessor = new RequestProcessor(socket);
-			
-			Thread thread = new Thread(requestProcessor);
-			thread.start(); 
-		}	
+		try 
+		{
+			while(true) 
+			{	
+				Socket socket = serverSocket.accept();
+				
+				RequestProcessor requestProcessor = new RequestProcessor(socket, dbGenerator);
+				
+				Thread thread = new Thread(requestProcessor);
+				thread.start(); 
+			}
+		}
+		catch(Exception e) {
+			System.err.println("VISHE");
+		}
 	} 
 	
 	private void CreateServerSocket() 
@@ -40,5 +53,17 @@ public class WebServer
 		catch(IOException e) {
 			System.err.println("O seguinte erro ocorreu ao criar o Socket TCP do servidor: " + e.getMessage());
 		}
+	}
+	
+	private void CreateDataBase() 
+	{
+		dbGenerator = new dbGenerator(dbName);
+	}
+	
+	private void PrepareDataBase() 
+	{
+		dbGenerator.OpenDataBaseConnection();
+		dbGenerator.CreateTablesIfNotExists();
+		dbGenerator.PopulateTableIfEmpty();
 	}
 }

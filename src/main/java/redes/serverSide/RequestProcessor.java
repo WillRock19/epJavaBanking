@@ -7,16 +7,16 @@ import redes.RequestStream;
 
 public class RequestProcessor implements Runnable
 {
-	private String dbName = "bankingTest";
+	private String dbName = "dbBankingTest";
 	private Socket socket;
 	private RequestStream stream;
 	private dbGenerator dbGenerator;
 	
-	public RequestProcessor(Socket socket) throws Exception
+	public RequestProcessor(Socket socket, dbGenerator dbGenerator) throws Exception
 	{
+		this.dbGenerator = dbGenerator;
 		this.socket = socket;
 		this.stream = new RequestStream(socket);
-		this.dbGenerator = new dbGenerator(dbName);
 	}
 	
 	@Override
@@ -34,7 +34,6 @@ public class RequestProcessor implements Runnable
 	
 	private void processRequest() throws Exception
 	{
-		PrepareDataBase();
 		Message message = GetMessageFromStream();
 		
 		//Checar se a mensagem está no formato certo
@@ -52,13 +51,6 @@ public class RequestProcessor implements Runnable
 		socket.close();
 	} 
 
-	private void PrepareDataBase() 
-	{
-		dbGenerator.OpenDataBaseConnection();
-		dbGenerator.CreateTablesIfNotExists();
-		
-	}
-	
 	private Message GetMessageFromStream() throws Exception
 	{
 		String json = stream.GetInputFromServer();
