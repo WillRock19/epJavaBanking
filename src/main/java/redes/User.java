@@ -5,8 +5,9 @@ public class User {
     private String account;
     private String password;
 
-    public User(String account) {
+    public User(String account,  String password) {
         this.account=account;
+        this.password = password;
     }
 
     @Override
@@ -30,5 +31,15 @@ public class User {
                 "account='" + account + '\'' +
                 "password='" + password + '\'' +
                 '}';
+    }
+    
+    public String getAccount() 
+    {
+    	return this.account;
+    }
+    
+    public String getPassword() 
+    {
+    	return this.password;
     }
 }

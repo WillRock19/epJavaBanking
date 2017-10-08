@@ -6,51 +6,59 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import redes.messages.ServerResponseMessage;
+
 public class RequestStream 
 {
-	private BufferedReader inputFromServer;
-	private DataOutputStream outputToServer;
+	private BufferedReader inputFromConnection;
+	private DataOutputStream outputToConnection;
 	
 	public RequestStream(Socket socket) throws Exception
 	{
-		defineInputFromServerStream(socket);
-		defineOutputToServerStream(socket);
+		defineInputStream(socket);
+		defineOutputStream(socket);
 	}
 	
-	public String GetInputFromServer() throws Exception
+	public String GetInputFromConnection() throws IOException
 	{
-		return inputFromServer.readLine();
+		return inputFromConnection.readLine();
 	}
 	
-	private void defineInputFromServerStream(Socket socket) 
+	public void SendToConnection(String message) throws Exception
+	{
+		outputToConnection.writeBytes(message);
+	}
+	
+	public void CloseOutputAndInputFromServerStream() throws Exception
+	{
+		outputToConnection.close();
+		inputFromConnection.close();
+	}
+	
+	private void defineInputStream(Socket socket) 
 	{
 		try {
-			inputFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));			
+			inputFromConnection = new BufferedReader(new InputStreamReader(socket.getInputStream()));			
 		}
 		catch(IOException e) 
 		{
 			System.err.println("--------------ERRO--------------");
-			System.err.println("Nao foi possivel criar o stream para receber dados do servidor");
+			System.err.println("Nao foi possivel criar o stream para receber dados do socket TCP.");
 			System.err.println("O seguinte erro ocorreu: " + e.getMessage());
 		}
 	}
 	
-	private void defineOutputToServerStream(Socket socket) 
+	private void defineOutputStream(Socket socket) 
 	{
 		try {
-			outputToServer = new DataOutputStream(socket.getOutputStream());
+			outputToConnection = new DataOutputStream(socket.getOutputStream());
 		}
 		catch(IOException e) 
 		{
 			System.err.println("--------------ERRO--------------");
-			System.err.println("Nao foi possivel criar o stream para enviar dados do servidor");
+			System.err.println("Nao foi possivel criar o stream para enviar dados do socket TCP.");
 			System.err.println("O seguinte erro ocorreu: " + e.getMessage());
 		}
 	}
 
-	public void closeOutputAndInputFromServerStream() throws Exception
-	{
-		outputToServer.close();
-		inputFromServer.close();
-	}
 }

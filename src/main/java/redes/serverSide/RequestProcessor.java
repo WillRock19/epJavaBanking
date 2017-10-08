@@ -1,10 +1,12 @@
 package redes.serverSide;
 
+import java.io.IOException;
 import java.net.Socket;
 
 import redes.Action;
 import redes.Message;
 import redes.RequestStream;
+import redes.messages.ServerResponseMessage;
 
 public class RequestProcessor implements Runnable
 {
@@ -12,12 +14,15 @@ public class RequestProcessor implements Runnable
 	private Socket socket;
 	private RequestStream stream;
 	private dbManager dbManager;
+	private Authenticator authenticator;
 	
 	public RequestProcessor(Socket socket, dbManager dbManager) throws Exception
 	{
 		this.dbManager = dbManager;
 		this.socket = socket;
 		this.stream = new RequestStream(socket);
+		
+		authenticator = new Authenticator(this.dbManager);
 	}
 	
 	@Override
@@ -37,45 +42,54 @@ public class RequestProcessor implements Runnable
 	{
 		Message message = GetMessageFromStream();
 		
-		//Checar se a mensagem está no formato certo
-		
-		switch(message.getAction())
+		if(message != null) 
 		{
-			case AUTHENTICATE:
+			//Chamar classes responsaveis pela acao e responder ao usuario
+			switch(message.getAction())
+			{
+				case AUTHENTICATE:
+					ServerResponseMessage response = authenticator.AuthenticateUser(message.getUser());
+					stream.SendToConnection(response.toJson());
+					break;
 				
-				break;
-			
-			case EXTRACT:
-				
-				break;
-				
-			case LIST:
-				
-				break;
-				
-			case TRANSFER:
-				
-				break;
-				
-			default:
-				System.out.println("Servidor nao reconhece a acao desejada pelo cliente.");
-				break;
+				case EXTRACT:
+					
+					break;
+					
+				case LIST:
+					
+					break;
+					
+				case TRANSFER:
+					
+					break;
+					
+				default:
+					System.out.println("Servidor nao reconhece a acao desejada pelo cliente.");
+					break;
+			}
 		}
-		
-		//Chamar classes responsaveis pela acao e responder ao usuario
 		
 		CloseSocketAndDataStream();
 	}
 	
 	private void CloseSocketAndDataStream() throws Exception
 	{
-		stream.closeOutputAndInputFromServerStream();
+		stream.CloseOutputAndInputFromServerStream();
 		socket.close();
 	} 
 
-	private Message GetMessageFromStream() throws Exception
+	private Message GetMessageFromStream()
 	{
-		String json = stream.GetInputFromServer();
-		return Message.fromJSON(json);
+		try {
+			String json = stream.GetInputFromConnection();
+			return Message.fromJSON(json);			
+		}
+		catch(Exception e) {
+			System.err.println("Nao foi possivel extrair a mensagem da conexao TCP.");
+			System.err.println("O seguinte erro ocorreu: " + e.getMessage());
+			
+			return null;
+		}
 	}
 }

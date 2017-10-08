@@ -1,31 +1,40 @@
 package redes.serverSide;
 
-import redes.Message;
 import redes.User;
+import redes.messages.ServerResponseMessage;
 
 public class Authenticator 
 {
-	private dbGenerator dbGenerator;
-	private Message message;
+	private boolean isAuthenticated;
+	private dbManager dbManager;
 	
-	public Authenticator(dbGenerator dbGenerator, Message message) 
+	public Authenticator(dbManager dbManager) 
 	{
-		this.dbGenerator = dbGenerator;
-		this.message = message;
+		isAuthenticated = false;
+		this.dbManager = dbManager;
 	}
 	
-	public void Authenticate() 
+	public ServerResponseMessage AuthenticateUser(User user) 
 	{
-		
-		
+		if(isAuthenticated(user)) 
+		{
+			isAuthenticated = true;
+			return new ServerResponseMessage().CreateServerAuthenticationSuccess();					
+		}
+		else 
+		{
+			isAuthenticated = false;
+			return new ServerResponseMessage().CreateServerAuthenticationError();	
+		}
 	}
 	
-	private boolean isAuthenticathed() 
+	public boolean wasAlreadyAuthenticated() 
 	{
-		User user = message.getUser();
-		
-		
-		
-		return true;
+		return isAuthenticated;
+	}
+	
+	private boolean isAuthenticated(User user) 
+	{
+		return dbManager.UserDataExistsInDataBase(user);
 	}
 }

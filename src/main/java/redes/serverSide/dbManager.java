@@ -2,6 +2,9 @@ package redes.serverSide;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import redes.User;
 
@@ -11,9 +14,10 @@ public class dbManager
 	private Connection connection;
 	private String dbPath;
 	
-	public dbManager(String dbPath)
+	public dbManager(String dbName)
 	{
-		this.dbPath = dbPath;
+		createDBPath(dbName);
+		
 		dbGenerator = new dbGenerator();
 		connection = null;
 	}
@@ -26,9 +30,22 @@ public class dbManager
 		dbGenerator.PopulateTableIfEmpty(connection);
 	}
 	
-	public void SearchForUserInDataBase(User user) 
+	public boolean UserDataExistsInDataBase(User user) 
 	{
-		
+		try 
+		{
+			boolean accountExists = itemExistInTable("Account", "Id", user.getAccount());
+			boolean passwordExists = itemExistInTable("User", "Password", user.getPassword());
+			
+			return accountExists && passwordExists;
+		}
+		catch(SQLException e) 
+		{
+			System.err.println("Nao foi possivel buscar os dados do usuario no Banco de Dados.");
+            System.err.println("O seguinte erro ocorreu: " + e.getMessage());
+            
+            return false;
+		}
 	}
 	
 	private void OpenDataBaseConnection() 
@@ -64,5 +81,15 @@ public class dbManager
 	private void createDBPath(String dbName) 
 	{
 		dbPath = "jdbc:sqlite:" + System.getProperty("user.dir") + "\\" + dbName;
+	}
+
+	private boolean itemExistInTable(String tableName, String criteriaFieldName, String valueToSearch) throws SQLException
+	{
+		String selectItemFromTable = String.format("SELECT * FROM %s WHERE %s = %s", tableName, criteriaFieldName, valueToSearch);
+		
+		Statement statement = connection.createStatement();
+		ResultSet result = statement.executeQuery(selectItemFromTable);
+		
+		return result.next();
 	}
 }
