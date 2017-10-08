@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 import redes.RequestStream;
 
@@ -11,6 +12,7 @@ public class ClientServer
 {
 	private RequestStream stream;
 	private Socket socket;
+	private Scanner scanner;
 	
 	public ClientServer(String clientHost, int clientPort) 
 	{
@@ -22,14 +24,12 @@ public class ClientServer
 		try 
 		{	
 			printInConsoleSocketIPAndPort();
+			scanner = new Scanner(System.in);
+
+			ClientProcessor clientProcessor = new ClientProcessor(socket, scanner);
 			
-			while(true) 
-			{
-				ClientProcessor clientProcessor = new ClientProcessor(socket);
-				
-				Thread thread = new Thread(clientProcessor);
-				thread.start(); 
-			}
+			Thread thread = new Thread(clientProcessor);
+			thread.start(); 
 		}
 		catch(Exception e) 
 		{

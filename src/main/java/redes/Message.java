@@ -1,7 +1,6 @@
 package redes;
 
 import com.google.gson.*;
-
 import java.io.Serializable;
 
 

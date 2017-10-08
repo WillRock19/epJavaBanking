@@ -15,7 +15,7 @@ public class MessageTest {
         message.setUser(new User("conta-louca", "senha1"));
         message.setValue(10);
         String json = message.toJson();
-        String expectedJson = "{\"action\":\"TRANSFER\",\"user\":{\"account\":\"conta-louca\"},\"value\":10}";
+        String expectedJson = "{\"action\":\"TRANSFER\",\"user\":{\"account\":\"conta-louca\",\"password\":\"senha1\"},\"value\":10}";
         assertThat(json, is(expectedJson));
     }
 
@@ -25,7 +25,7 @@ public class MessageTest {
         expectedMessage.setAction(TRANSFER);
         expectedMessage.setUser(new User("conta-louca", "senha1"));
         expectedMessage.setValue(10);
-        String json = "{\"action\":\"TRANSFER\",\"user\":{\"account\":\"conta-louca\"},\"value\":10}";
+        String json = "{\"action\":\"TRANSFER\",\"user\":{\"account\":\"conta-louca\",\"password\":\"senha1\"},\"value\":10}";
         Message message = Message.fromJSON(json);
         assertThat(expectedMessage, is(message));
     }

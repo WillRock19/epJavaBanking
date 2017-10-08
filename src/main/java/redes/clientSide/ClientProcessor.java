@@ -5,22 +5,25 @@ import java.util.Scanner;
 
 import redes.Action;
 import redes.Message;
+import redes.PasswordManager;
 import redes.RequestStream;
 import redes.User;
 
 public class ClientProcessor implements Runnable
 {
-	private Socket socket;
-	private RequestStream stream;
 	private boolean userIsLogged;
+	private RequestStream stream;
+	private PasswordManager passwordManager;
 	private Scanner scanner;
+	private Socket socket;
 	
-	public ClientProcessor(Socket socket)
+	public ClientProcessor(Socket socket, Scanner scanner)
 	{
 		stream = new RequestStream(socket);
-		scanner = new Scanner(System.in);
 		userIsLogged = false;
+		passwordManager = new PasswordManager();
 		
+		this.scanner = scanner;
 		this.socket = socket;
 	}
 
@@ -46,7 +49,6 @@ public class ClientProcessor implements Runnable
 		}
 			
 		closeSocketAndDataStream();
-		closeScanner();
 	}
 	
 	private void makeUserLogin() throws Exception
@@ -70,17 +72,12 @@ public class ClientProcessor implements Runnable
 		System.out.println("Senha do cliente: ");
 		String password = scanner.nextLine();
 		
-		return new User(accountId, password);
+		return new User(accountId, passwordManager.EncodePassword(password));
 	}
 	
 	private void closeSocketAndDataStream() throws Exception
 	{
 		stream.CloseOutputAndInputFromServerStream();
 		socket.close();
-	} 
-	
-	private void closeScanner() 
-	{
-		scanner.close();
 	}
 }
