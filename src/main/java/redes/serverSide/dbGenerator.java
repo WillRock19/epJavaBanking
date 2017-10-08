@@ -8,47 +8,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.Date;
+
+import redes.PasswordManager;
 
 public class dbGenerator 
 {
-	private String dbPath;
-	private Connection connection;
+	private PasswordManager passwordManager;
 	
-	public dbGenerator(String dbName)
+	public dbGenerator()
 	{
-		createDBPath(dbName);
-		connection = null;
+		passwordManager = new PasswordManager();
 	}
 	
-	public void OpenDataBaseConnection() 
-	{
-	      try 
-	      {
-	    	 System.out.println("Iniciando conexao com banco de dados...");
-	    	 loadJDBCDrive();
-	    	 
-	    	 //If database does not exist, it will be created automatically
-	    	 connection = DriverManager.getConnection(dbPath);
-	         
-	         System.out.println("O banco de dados foi conectado com sucesso!");
-	      } 
-	      catch(ClassNotFoundException e) 
-	      {
-	    	  System.err.println("Não foi possivel carregar a classe do JDBC. O seguinte erro ocorreu: " + e.getMessage()); 
-	          System.exit(0);
-	      }
-	      catch (Exception e ) 
-	      {
-	    	 System.err.println("Um erro ocorreu ao abrir a conexão com o banco de dados."); 
-	         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-	         System.exit(0);
-	      }
-   }
-	
-	public void CreateTablesIfNotExists() 
+	public void CreateTablesIfNotExists(Connection connection) 
 	{
 		String createAccountTable = createAccountTableStatement();
 		String createUserTable = createUserTableStatement();
@@ -57,8 +30,11 @@ public class dbGenerator
 		{
 			System.out.println("Criando tabelas...");
 			
-			if(connection == null)
-				OpenDataBaseConnection();
+			if(connection == null) 
+			{
+				System.err.println("Impossivel de criar as tabelas. Nao ha conexao com o banco.");
+				return;
+			}
 			
 			Statement statement = connection.createStatement();
             
@@ -75,22 +51,25 @@ public class dbGenerator
         }
 	}
 	
-	public void PopulateTableIfEmpty()
+	public void PopulateTableIfEmpty(Connection connection)
 	{
 		try
 		{
 			System.out.println("Populando Banco de dados...");
 			
-			if(connection == null)
-				OpenDataBaseConnection();
+			if(connection == null) 
+			{
+				System.err.println("Impossivel de criar as tabelas. Nao ha conexao com o banco.");
+				return;
+			}
 			
 			Statement statement = connection.createStatement();
             
-			if(!AccountTableHasValues(statement)) 
-				createTwoDefaultAccounts();
+			if(!accountTableHasValues(statement)) 
+				createTwoDefaultAccounts(connection);
 			
-			if(!UserTableHasValues(statement)) 
-				createTwoDefaultUsers();
+			if(!userTableHasValues(statement)) 
+				createTwoDefaultUsers(connection);
 			
 			System.out.println("Banco populado com sucesso!");
         } 
@@ -102,16 +81,6 @@ public class dbGenerator
         }
 	}
 	
-	private void createDBPath(String dbName) 
-	{
-		dbPath = "jdbc:sqlite:" + System.getProperty("user.dir") + "\\" + dbName;
-	}
-	
-	private void loadJDBCDrive() throws Exception
-	{
-        Class.forName("org.sqlite.JDBC");
-	}
-
 	private String createUserTableStatement() 
 	{
 		return "CREATE TABLE IF NOT EXISTS User (\n"
@@ -145,17 +114,17 @@ public class dbGenerator
 		return "INSERT INTO Account(Id, Open_Date, Ammount_Money) VALUES(?,?,?)";	
 	}
 	
-	private boolean UserTableHasValues(Statement statement) throws SQLException
+	private boolean userTableHasValues(Statement statement) throws SQLException
 	{
-		return TableHasRows(statement,  "User");
+		return tableHasRows(statement,  "User");
 	}
 	
-	private boolean AccountTableHasValues(Statement statement) throws SQLException
+	private boolean accountTableHasValues(Statement statement) throws SQLException
 	{
-		return TableHasRows(statement, "Account");
+		return tableHasRows(statement, "Account");
 	}
 	
-	private boolean TableHasRows(Statement statement, String tableName) throws SQLException
+	private boolean tableHasRows(Statement statement, String tableName) throws SQLException
 	{
 		String selectAllUser = "SELECT * FROM " + tableName;
 		ResultSet result = statement.executeQuery(selectAllUser);
@@ -163,7 +132,7 @@ public class dbGenerator
 		return result.next();
 	}
 	
-	private void createTwoDefaultAccounts() throws SQLException
+	private void createTwoDefaultAccounts(Connection connection) throws SQLException
 	{	
 		String accountDefaultData[][] = new String[][] 
 		{ 
@@ -186,7 +155,7 @@ public class dbGenerator
 		}
 	}
 
-	private void createTwoDefaultUsers() throws SQLException
+	private void createTwoDefaultUsers(Connection connection) throws SQLException
 	{
 		String userDefaultData[][] = new String[][] 
 		{ 
@@ -201,7 +170,9 @@ public class dbGenerator
 			
 			prepared.setInt(1, index + 1);
 			prepared.setString(2, userDefaultData[index][0]);
-			prepared.setString(3, "senha1");
+			
+			String senha = "senha" + (index + 1);
+			prepared.setString(3, passwordManager.EncodePassword(senha));
 		
 			prepared.setInt(4, index + 1);
 			prepared.setString(5, "Rua Long Beach 34" + index);

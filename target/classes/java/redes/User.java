@@ -3,8 +3,7 @@ package redes;
 public class User {
 
     private String account;
-
-    private String nome;
+    private String password;
 
     public User(String account) {
         this.account=account;
@@ -29,6 +28,7 @@ public class User {
     public String toString() {
         return "User{" +
                 "account='" + account + '\'' +
+                "password='" + password + '\'' +
                 '}';
     }
 }

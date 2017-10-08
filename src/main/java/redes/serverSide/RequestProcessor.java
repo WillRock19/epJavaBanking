@@ -2,6 +2,7 @@ package redes.serverSide;
 
 import java.net.Socket;
 
+import redes.Action;
 import redes.Message;
 import redes.RequestStream;
 
@@ -10,11 +11,11 @@ public class RequestProcessor implements Runnable
 	private String dbName = "dbBankingTest";
 	private Socket socket;
 	private RequestStream stream;
-	private dbGenerator dbGenerator;
+	private dbManager dbManager;
 	
-	public RequestProcessor(Socket socket, dbGenerator dbGenerator) throws Exception
+	public RequestProcessor(Socket socket, dbManager dbManager) throws Exception
 	{
-		this.dbGenerator = dbGenerator;
+		this.dbManager = dbManager;
 		this.socket = socket;
 		this.stream = new RequestStream(socket);
 	}
@@ -38,7 +39,28 @@ public class RequestProcessor implements Runnable
 		
 		//Checar se a mensagem está no formato certo
 		
-		//Verificar qual a acao que usuario quer realizar
+		switch(message.getAction())
+		{
+			case AUTHENTICATE:
+				
+				break;
+			
+			case EXTRACT:
+				
+				break;
+				
+			case LIST:
+				
+				break;
+				
+			case TRANSFER:
+				
+				break;
+				
+			default:
+				System.out.println("Servidor nao reconhece a acao desejada pelo cliente.");
+				break;
+		}
 		
 		//Chamar classes responsaveis pela acao e responder ao usuario
 		
