@@ -13,7 +13,7 @@ public class RequestStream
 	private BufferedReader inputFromConnection;
 	private DataOutputStream outputToConnection;
 	
-	public RequestStream(Socket socket) throws Exception
+	public RequestStream(Socket socket)
 	{
 		defineInputStream(socket);
 		defineOutputStream(socket);

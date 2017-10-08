@@ -1,22 +1,19 @@
 package redes.serverSide;
 
-import java.io.IOException;
 import java.net.Socket;
 
-import redes.Action;
 import redes.Message;
 import redes.RequestStream;
 import redes.messages.ServerResponseMessage;
 
 public class RequestProcessor implements Runnable
 {
-	private String dbName = "dbBankingTest";
 	private Socket socket;
 	private RequestStream stream;
 	private dbManager dbManager;
 	private Authenticator authenticator;
 	
-	public RequestProcessor(Socket socket, dbManager dbManager) throws Exception
+	public RequestProcessor(Socket socket, dbManager dbManager)
 	{
 		this.dbManager = dbManager;
 		this.socket = socket;
@@ -33,8 +30,7 @@ public class RequestProcessor implements Runnable
 		}
 		catch(Exception e) 
 		{
-			System.err.println("O seguinte erro ocorreu ao processar sua requisição: ");
-			System.err.println(e.getMessage());
+			System.err.println("O seguinte erro ocorreu ao processar sua requisição: " + e.getMessage());
 		}
 	}
 	

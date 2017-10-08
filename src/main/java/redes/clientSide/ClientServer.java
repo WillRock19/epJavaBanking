@@ -1,16 +1,12 @@
 package redes.clientSide;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 
 import redes.RequestStream;
 
 public class ClientServer 
 {
-	private ClientRequestProcessor messageProcessor;
 	private RequestStream stream;
 	private Socket socket;
 	
@@ -18,15 +14,24 @@ public class ClientServer
 	{
 		CreateSocket(clientHost, clientPort);
 		CreateRequestStream(socket);
-		
-		messageProcessor = new ClientRequestProcessor(stream);
 	}
 	
 	public void Execute() 
 	{
-		while(true) 
+		try 
+		{	
+			while(true) 
+			{			
+				ClientProcessor clientProcessor = new ClientProcessor(stream);
+				
+				Thread thread = new Thread(clientProcessor);
+				thread.start(); 
+			}
+		}
+		catch(Exception e) 
 		{
-			
+			System.err.println("Um erro ocorreu no servidor do cliente. Encerrando aplicacao...");
+			System.exit(0);
 		}
 	}
 	
