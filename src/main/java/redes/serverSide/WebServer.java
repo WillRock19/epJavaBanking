@@ -29,6 +29,7 @@ public class WebServer
 		try 
 		{
 			printInConsoleSocketIPAndPort();
+			System.out.println("Aguardando mensagens do cliente...");
 			
 			while(true) 
 			{

@@ -66,7 +66,7 @@ public class RequestProcessor implements Runnable
 			}
 		}
 		
-		CloseSocketAndDataStream();
+		//CloseSocketAndDataStream();
 	}
 	
 	private void CloseSocketAndDataStream() throws Exception

@@ -1,6 +1,8 @@
 package redes;
 
 
+import java.net.InetAddress;
+
 import com.google.gson.Gson;
 import redes.clientSide.ClientServer;
 import redes.serverSide.WebServer;
@@ -15,19 +17,15 @@ public class Main
         	System.exit(0);
     	}*/
     	
-    	//TODO: melhorar logica. Deve receber porta do cliente? 
+    	int portNumber = 6789;
     	
-    	if(args[0] == "cliente") 
+    	if(args.length != 0 && args[0].equals("cliente")) 
     	{
-    		executeAsClient();
+    		executeAsClient(args[1], 6789);
     	}
     	else {
-    		int portNumber = 6789;
     		executeAsServer(portNumber);
     	}
-    		
-//        String json = "{\"action\":\"TRANSFER\",\"user\":{\"account\":\"conta-louca\"},\"value\":10}";
-  //      System.out.println(Message.fromJSON(json));
     }
     
     private static void executeAsServer(int portNumber) 
@@ -44,11 +42,11 @@ public class Main
     	}
     }
     
-    private static void executeAsClient() 
+    private static void executeAsClient(String serverIP, int portNumber) 
     {
     	try 
     	{
-    		ClientServer server = new ClientServer("localhost", 0);
+    		ClientServer server = new ClientServer(serverIP, portNumber);
         	server.Execute();	
     	}
     	catch(Exception e) 

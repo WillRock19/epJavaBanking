@@ -7,11 +7,9 @@ import java.io.Serializable;
 
 public class Message implements Serializable {
 
-
     private Action action;
     private User user;
     private Integer value;
-
 
     public String toJson(){
         GsonBuilder builder = new GsonBuilder();

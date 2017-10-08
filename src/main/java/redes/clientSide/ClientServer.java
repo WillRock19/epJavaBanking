@@ -1,7 +1,9 @@
 package redes.clientSide;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import redes.RequestStream;
 
@@ -13,16 +15,17 @@ public class ClientServer
 	public ClientServer(String clientHost, int clientPort) 
 	{
 		CreateSocket(clientHost, clientPort);
-		CreateRequestStream(socket);
 	}
 	
 	public void Execute() 
 	{
 		try 
 		{	
+			printInConsoleSocketIPAndPort();
+			
 			while(true) 
-			{			
-				ClientProcessor clientProcessor = new ClientProcessor(stream);
+			{
+				ClientProcessor clientProcessor = new ClientProcessor(socket);
 				
 				Thread thread = new Thread(clientProcessor);
 				thread.start(); 
@@ -46,13 +49,21 @@ public class ClientServer
 		}
 	}
 	
-	private void CreateRequestStream(Socket socket) 
+	private void printInConsoleSocketIPAndPort()
 	{
+		System.out.println("\n*****DADOS DE CONEXAO DO CLIENTE: *****");
+		
 		try {
-			stream = new RequestStream(socket);
-		}
-		catch(Exception e) {
-			System.err.println("O seguinte erro ocorreu ao criar um RequestStream: " + e.getMessage());
-		}
+	        InetAddress iAddress = InetAddress.getLocalHost();
+	        String server_IP = iAddress.getHostAddress();
+	        
+	        System.out.println("\t 1.Server IP address  : " + server_IP);
+	        System.out.println("\t 2.Server PORT number : " + socket.getLocalPort());
+	    } 
+		catch (UnknownHostException e) 
+		{
+			System.err.println("Erro ao recuperar IP do servidor.");
+			System.exit(0);;
+	    }
 	}
 }
