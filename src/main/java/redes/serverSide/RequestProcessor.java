@@ -48,15 +48,15 @@ public class RequestProcessor implements Runnable {
 				stream.SendToConnection(response.toJson());
 				break;
 
-			case EXTRACT:
+			case DEPOSIT:
+				
+				break;
+
+			case WITHDRAWL:
 
 				break;
 
-			case LIST:
-
-				break;
-
-			case TRANSFER:
+			case FINANCIAL_TRANSACTIONS:
 
 				break;
 

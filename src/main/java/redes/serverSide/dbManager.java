@@ -2,6 +2,7 @@ package redes.serverSide;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,7 +30,7 @@ public class dbManager {
 
 	public boolean UserDataExistsInDataBase(User user) {
 		try {
-			boolean accountExists = itemExistInTable("Account", "Id", user.getAccount());
+			boolean accountExists = itemExistInTable("User", "Id", user.getAccount());
 			boolean passwordExists = itemExistInTable("User", "Password", "'" + user.getPassword() + "'");
 
 			return accountExists && passwordExists;
@@ -78,5 +79,23 @@ public class dbManager {
 		ResultSet result = statement.executeQuery(selectItemFromTable);
 
 		return result.next();
+	}
+	
+	public double getSaldoUsuario(User user){
+		String sumStatement = "SELECT SUM(Amount) FROM FinancialTransaction WHERE UserId = " + user.getAccount();
+		
+		//TODO: somatória com o result set do statement
+		return 0.0;
+	}
+	
+	public void insertFinancialTransaction(User user, double amount) throws SQLException{
+		String statement = "INSERT INTO FinancialTransaction(UserId, Amount) VALUES(?, ?);";
+		
+		PreparedStatement prepared = connection.prepareStatement(statement);
+		
+		prepared.setInt(1, Integer.parseInt(user.getAccount()));
+		prepared.setDouble(2, amount);
+		
+		prepared.execute();
 	}
 }
