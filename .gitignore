@@ -1,2 +1,8 @@
-/.metadata/
-/target/
+.settings/
+.project
+.classpath
+*.iml
+.idea/
+*.jar
+target/*
+!/.mvn/wrapper/maven-wrapper.jar
