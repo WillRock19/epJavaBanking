@@ -1,5 +1,5 @@
 package redes;
 
 public enum Action {
-    TRANSFER,EXTRACT,LIST, AUTHENTICATE
+	TRANSFER, EXTRACT, LIST, AUTHENTICATE
 }
