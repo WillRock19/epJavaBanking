@@ -19,8 +19,8 @@ public class dbGenerator {
 	}
 
 	public void CreateTablesIfNotExists(Connection connection) {
-		String createAccountTable = createAccountTableStatement();
 		String createUserTable = createUserTableStatement();
+		String createFinancialTransactionTable = createFinancialTransactionStatement();
 
 		try {
 			System.out.println("Criando tabelas...");
@@ -32,8 +32,8 @@ public class dbGenerator {
 
 			Statement statement = connection.createStatement();
 
-			statement.execute(createAccountTable);
 			statement.execute(createUserTable);
+			statement.execute(createFinancialTransactionTable);
 
 			System.out.println("Tabelas criadas com sucesso!");
 		} catch (SQLException e) {
@@ -54,11 +54,11 @@ public class dbGenerator {
 
 			Statement statement = connection.createStatement();
 
-			if (!accountTableHasValues(statement))
-				createTwoDefaultAccounts(connection);
-
 			if (!userTableHasValues(statement))
 				createTwoDefaultUsers(connection);
+			
+			if(!financialTransactionTableHasValues(statement))
+				createFinancialTransactionForUsers(connection);
 
 			System.out.println("Banco populado com sucesso!");
 		} catch (SQLException e) {
@@ -75,25 +75,26 @@ public class dbGenerator {
 				+ "FOREIGN KEY (AccountId) REFERENCES Account(Id)" + ");";
 	}
 
-	private String createAccountTableStatement() {
-		return "CREATE TABLE IF NOT EXISTS Account (\n" + "Id integer PRIMARY KEY ,  \n" + "Open_Date DATE NOT NULL, \n"
-				+ "Ammount_Money double NOT NULL \n" + ");";
+	private String createFinancialTransactionStatement() {
+		return "CREATE TABLE IF NOT EXISTS FinancialTransaction" + 
+			   "(Id INTEGER PRIMARY KEY AUTOINCREMENT, UserId INTEGER NOT NULL,"+
+			   "Amount REAL NOT NULL, FOREIGN KEY(UserId) REFERENCES User(Id));";
 	}
 
 	private String createUserInsertStatement() {
 		return "INSERT INTO User(Id, UserName, Password, AccountId, Adress, Birth_Date, Age) VALUES(?,?,?,?,?,?,?)";
 	}
-
-	private String createAccountInsertStatement() {
-		return "INSERT INTO Account(Id, Open_Date, Ammount_Money) VALUES(?,?,?)";
+	
+	private String createFinancialAccountInsertStatement(){
+		return "INSERT INTO FinancialTransaction(UserId, Amount) VALUES(?, ?);";
 	}
 
 	private boolean userTableHasValues(Statement statement) throws SQLException {
 		return tableHasRows(statement, "User");
 	}
-
-	private boolean accountTableHasValues(Statement statement) throws SQLException {
-		return tableHasRows(statement, "Account");
+	
+	private boolean financialTransactionTableHasValues(Statement statement) throws SQLException{
+		return tableHasRows(statement, "FinancialTransaction");
 	}
 
 	private boolean tableHasRows(Statement statement, String tableName) throws SQLException {
@@ -101,24 +102,6 @@ public class dbGenerator {
 		ResultSet result = statement.executeQuery(selectAllUser);
 
 		return result.next();
-	}
-
-	private void createTwoDefaultAccounts(Connection connection) throws SQLException {
-		String accountDefaultData[][] = new String[][] { { "22-04-2015 08:40:00", "4025.56" },
-				{ "19-01-2016 12:30:56", "800.00", } };
-
-		for (int index = 0; index < 2; index++) {
-			String sql = createAccountInsertStatement();
-			PreparedStatement prepared = connection.prepareStatement(sql);
-
-			String dateInString = accountDefaultData[index][0];
-
-			prepared.setInt(1, index + 1);
-			prepared.setDate(2, DateToInsert(dateInString));
-			prepared.setDouble(3, Double.parseDouble(accountDefaultData[index][1]));
-
-			prepared.executeUpdate();
-		}
 	}
 
 	private void createTwoDefaultUsers(Connection connection) throws SQLException {
@@ -143,6 +126,22 @@ public class dbGenerator {
 			prepared.setDate(6, DateToInsert(dateInString));
 			prepared.setInt(7, 18 + index);
 
+			prepared.executeUpdate();
+		}
+	}
+	
+	private void createFinancialTransactionForUsers(Connection connection) throws SQLException {
+		String userDefaultData[][] = new String[][] { { "1", "100.0" },
+				{ "1", "-28.93" }, { "1", "-45.35" }, { "1", "-92.93" }, { "1", "1500.00" }, { "1", "-1200" }, 
+				{ "2", "-78.12" }, { "2", "80.0" }, { "2", "94.30" }, { "2", "-115.36" }, { "2", "-4.35" }};
+
+		for (int index = 0; index < 2; index++) {
+			String sql = createFinancialAccountInsertStatement();
+			PreparedStatement prepared = connection.prepareStatement(sql);
+
+			prepared.setInt(1, Integer.parseInt(userDefaultData[index][0]));
+			prepared.setDouble(2, Double.parseDouble(userDefaultData[index][1]));
+			
 			prepared.executeUpdate();
 		}
 	}
