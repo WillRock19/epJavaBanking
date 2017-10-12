@@ -43,6 +43,8 @@ public class ClientProcessor implements Runnable {
 				tryLogin();
 			else {
 				try {
+					//TODO: AÇÕES DO USUÁRIO AQUI
+					//DEPOSITO, SAQUE E EXTRATO FINANCEIRO.
 					stream.GetInputFromConnection();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
