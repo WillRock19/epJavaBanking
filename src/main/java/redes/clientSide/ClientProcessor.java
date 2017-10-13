@@ -12,7 +12,8 @@ import redes.User;
 import redes.json.AuthenticationResponseMessage;
 import redes.json.Message;
 
-public class ClientProcessor implements Runnable {
+public class ClientProcessor implements Runnable 
+{
 	private boolean userIsLogged;
 	private RequestStream stream;
 	private PasswordManager passwordManager;
@@ -30,31 +31,28 @@ public class ClientProcessor implements Runnable {
 	public void run() {
 		try {
 			processRequest();
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			System.err.println("ERRO AO PROCESSAR REQUISIÇÃO: " + e.getMessage());
-		} finally {
+		} 
+		finally {
 			stream.CloseOutputAndInputFromServerStream();
 		}
 	}
 
-	private void processRequest() {
-		while (true) {
+	private void processRequest() 
+	{
+		while (true) 
+		{
 			if (!userIsLogged)
-				tryLogin();
-			else {
-				try {
-					//TODO: AÇÕES DO USUÁRIO AQUI
-					//DEPOSITO, SAQUE E EXTRATO FINANCEIRO.
-					stream.GetInputFromConnection();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+				makeUserLogin();
+			else 
+				createMenuAndGetInputs();
 		}
 	}
 
-	private void tryLogin() {
+	private void makeUserLogin() 
+	{
 		User userData = getUserCredentials();
 		ActionMessage message = new ActionMessage();
 
@@ -66,20 +64,18 @@ public class ClientProcessor implements Runnable {
 		try {
 			stream.SendToConnection(message.toJson());
 			serverResponse = stream.GetInputFromConnection();
-		} catch (Exception e) {
+			
+			AuthenticationResponseMessage responseMessage = Message.authenticationFromJSON(serverResponse);
+			userIsLogged = responseMessage.isUserAuthenticated();
+		} 
+		catch (Exception e) {
 			System.out.println("NÃO FOI POSSÍVEL AUTENTICAR USUÁRIO: " + e.getMessage());
 		}
 
-		AuthenticationResponseMessage responseMessage = (AuthenticationResponseMessage) Message
-				.fromJSON(serverResponse);
-
-		userIsLogged = responseMessage.isUserAuthenticated();
-
-		if (userIsLogged) {
+		if (userIsLogged)
 			System.out.println("Usuário autenticado com êxito.");
-		} else {
+		else
 			System.out.println("Usuário/senha inválidos.");
-		}
 	}
 
 	private User getUserCredentials() {
@@ -92,5 +88,19 @@ public class ClientProcessor implements Runnable {
 		String password = scanner.nextLine();
 
 		return new User(accountId, passwordManager.EncodePassword(password));
+	}
+
+	private void createMenuAndGetInputs()
+	{
+		try 
+		{
+			//TODO: AÇÕES DO USUÁRIO AQUI: DEPOSITO, SAQUE E EXTRATO FINANCEIRO.
+			
+			stream.GetInputFromConnection();
+		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

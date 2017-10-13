@@ -17,7 +17,8 @@ public class RequestStream {
 		this.socket = socket;
 	}
 
-	public String GetInputFromConnection() throws IOException {
+	public String GetInputFromConnection() throws IOException
+	{	
 		return inputFromConnection.readLine();
 	}
 

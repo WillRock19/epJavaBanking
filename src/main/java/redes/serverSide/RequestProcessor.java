@@ -72,7 +72,14 @@ public class RequestProcessor implements Runnable {
 	private ActionMessage GetMessageFromStream() {
 		try {
 			String json = stream.GetInputFromConnection();
-			return (ActionMessage) Message.fromJSON(json);
+			
+			System.out.println("-------------------------------------------");
+			System.out.println("A mensagem recebida foi: " + json);
+			
+			Message t = Message.fromJSON(json);
+			
+			return (ActionMessage) t;
+			
 		} catch (Exception e) {
 			System.err.println("ERRO AO RECEBER RESPOSTA DO CLIENTE: " + e.getMessage());
 
