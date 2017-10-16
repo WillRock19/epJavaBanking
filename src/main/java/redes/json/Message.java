@@ -1,6 +1,7 @@
 package redes.json;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,7 +24,20 @@ public class Message implements Serializable
 	}
 	
 	public static AuthenticationResponseMessage authenticationFromJSON(String json) {
-		Gson gson = new Gson();
-		return gson.fromJson(json, AuthenticationResponseMessage.class);
+		return (AuthenticationResponseMessage) messageFromJson(json, AuthenticationResponseMessage.class);
 	}
+
+	public static DepositResponseMessage depositFromJSON(String json){
+		return (DepositResponseMessage) messageFromJson(json, DepositResponseMessage.class);
+	}
+
+	public static WithdrawResponseMessage WithDrawlResponseMessageFromJson(String json) {
+		return (WithdrawResponseMessage) messageFromJson(json, WithdrawResponseMessage.class);
+	}
+
+	private static Message messageFromJson(String json, Class<?> clazz) {
+		Gson gson = new Gson();
+		return gson.fromJson(json, (Type) clazz);
+	}
+
 }
