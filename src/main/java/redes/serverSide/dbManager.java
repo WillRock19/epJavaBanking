@@ -81,11 +81,12 @@ public class dbManager {
 		return result.next();
 	}
 	
-	public double getSaldoUsuario(User user){
+	public double getSaldoUsuario(User user) throws SQLException {
 		String sumStatement = "SELECT SUM(Amount) FROM FinancialTransaction WHERE UserId = " + user.getAccount();
 		
-		//TODO: somatória com o result set do statement
-		return 0.0;
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery(sumStatement);
+		return resultSet.getDouble(0);
 	}
 	
 	public void insertFinancialTransaction(User user, double amount) throws SQLException{
