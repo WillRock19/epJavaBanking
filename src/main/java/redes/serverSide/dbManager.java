@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import redes.User;
 
@@ -81,11 +83,12 @@ public class dbManager {
 		return result.next();
 	}
 	
-	public double getSaldoUsuario(User user){
+	public double getSaldoUsuario(User user) throws SQLException {
 		String sumStatement = "SELECT SUM(Amount) FROM FinancialTransaction WHERE UserId = " + user.getAccount();
 		
-		//TODO: somatória com o result set do statement
-		return 0.0;
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery(sumStatement);
+		return resultSet.getDouble(1);
 	}
 	
 	public void insertFinancialTransaction(User user, double amount) throws SQLException{
@@ -97,5 +100,17 @@ public class dbManager {
 		prepared.setDouble(2, amount);
 		
 		prepared.execute();
+	}
+
+	public List<Double> listFinancialTransaction(User user) throws SQLException {
+		String selectStatement = "SELECT Amount FROM FinancialTransaction WHERE UserId = " + user.getAccount();
+
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery(selectStatement);
+		List<Double> result = new ArrayList<>();
+		while(resultSet.next()){
+			result.add(resultSet.getDouble(1));
+		}
+		return result;
 	}
 }
