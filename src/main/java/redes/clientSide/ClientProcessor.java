@@ -9,10 +9,7 @@ import redes.ActionMessage;
 import redes.PasswordManager;
 import redes.RequestStream;
 import redes.User;
-import redes.json.AuthenticationResponseMessage;
-import redes.json.DepositResponseMessage;
-import redes.json.Message;
-import redes.json.WithdrawResponseMessage;
+import redes.json.*;
 
 public class ClientProcessor implements Runnable {
     private boolean userIsLogged;
@@ -100,7 +97,7 @@ public class ClientProcessor implements Runnable {
                     makeWithdrawl();
                     break;
                 case "3":
-                    ActionMessage actionMessage = new ActionMessage();
+                    getStatements();
                     break;
                 default:
                     System.out.println("Opção não disponível no client.");
@@ -110,6 +107,28 @@ public class ClientProcessor implements Runnable {
             stream.GetInputFromConnection();
         } catch (IOException e) {
             // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private void getStatements() {
+        ActionMessage actionMessage = new ActionMessage();
+        actionMessage.setUser(user);
+        actionMessage.setAction(Action.FINANCIAL_TRANSACTIONS);
+        try {
+            stream.SendToConnection(actionMessage.toJson());
+            String serverResponse = stream.GetInputFromConnection();
+            FinancialTransactionsResponseMessage financialTransactionsResponseMessage = Message.FinancialTransactionsResponseMessageFromJson(serverResponse);
+            if(financialTransactionsResponseMessage.isFinancialTransactionDone()){
+                System.out.println("Transações financeiras do usuário:");
+                for(double amount : financialTransactionsResponseMessage.getFinancialItems()){
+                    System.out.println("amount: " + amount);
+                }
+            }else{
+                System.out.println("Usuário não autorizado a efetuar a operação.");
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

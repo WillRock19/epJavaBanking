@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import redes.User;
 
@@ -98,5 +100,17 @@ public class dbManager {
 		prepared.setDouble(2, amount);
 		
 		prepared.execute();
+	}
+
+	public List<Double> listFinancialTransaction(User user) throws SQLException {
+		String selectStatement = "SELECT Amount FROM FinancialTransaction WHERE UserId = " + user.getAccount();
+
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery(selectStatement);
+		List<Double> result = new ArrayList<>();
+		while(resultSet.next()){
+			result.add(resultSet.getDouble(0));
+		}
+		return result;
 	}
 }

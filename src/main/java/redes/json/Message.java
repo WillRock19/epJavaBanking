@@ -35,9 +35,12 @@ public class Message implements Serializable
 		return (WithdrawResponseMessage) messageFromJson(json, WithdrawResponseMessage.class);
 	}
 
+	public static FinancialTransactionsResponseMessage FinancialTransactionsResponseMessageFromJson(String json) {
+		return (FinancialTransactionsResponseMessage) messageFromJson(json,FinancialTransactionsResponseMessage.class);
+	}
+
 	private static Message messageFromJson(String json, Class<?> clazz) {
 		Gson gson = new Gson();
 		return gson.fromJson(json, (Type) clazz);
 	}
-
 }

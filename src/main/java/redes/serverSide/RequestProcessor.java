@@ -4,10 +4,7 @@ import java.net.Socket;
 
 import redes.ActionMessage;
 import redes.RequestStream;
-import redes.json.AuthenticationResponseMessage;
-import redes.json.DepositResponseMessage;
-import redes.json.Message;
-import redes.json.WithdrawResponseMessage;
+import redes.json.*;
 
 public class RequestProcessor implements Runnable {
 
@@ -60,12 +57,14 @@ public class RequestProcessor implements Runnable {
                     break;
 
                 case WITHDRAWL:
-                    WithdrawResponseMessage withdrawResponse = withdrawl.withdraw(message.getUser(), message.getValue());
+                    WithdrawResponseMessage withdrawResponse = this.withdrawl.withdraw(message.getUser(), message.getValue());
                     stream.SendToConnection(withdrawResponse.toJson());
                     break;
 
                 case FINANCIAL_TRANSACTIONS:
-
+                    FinancialTransactions financialTransactions = new FinancialTransactions(authenticator,dbManager);
+                    FinancialTransactionsResponseMessage financialTransactionsResponse = financialTransactions.getStatements(message.getUser());
+                    stream.SendToConnection(financialTransactionsResponse.toJson());
                     break;
 
                 default:
