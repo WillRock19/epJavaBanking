@@ -88,7 +88,7 @@ public class dbManager {
 		
 		Statement statement = connection.createStatement();
 		ResultSet resultSet = statement.executeQuery(sumStatement);
-		return resultSet.getDouble(0);
+		return resultSet.getDouble(1);
 	}
 	
 	public void insertFinancialTransaction(User user, double amount) throws SQLException{
@@ -109,7 +109,7 @@ public class dbManager {
 		ResultSet resultSet = statement.executeQuery(selectStatement);
 		List<Double> result = new ArrayList<>();
 		while(resultSet.next()){
-			result.add(resultSet.getDouble(0));
+			result.add(resultSet.getDouble(1));
 		}
 		return result;
 	}
